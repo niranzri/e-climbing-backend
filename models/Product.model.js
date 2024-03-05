@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose"); // imports the Schema and model dependencies from the mongoose library
+const { Schema, model, Types } = require("mongoose"); // imports the Schema and model dependencies from the mongoose library
 
 const productSchema = new Schema({  // creates the productSchema using the Schema constructor
     name: {
@@ -17,6 +17,10 @@ const productSchema = new Schema({  // creates the productSchema using the Schem
         type: String,
         enum: ["male", "female", "neutral"],
         required: true,
+    },
+    reviews: {
+        type: [Types.ObjectId], 
+        ref: "Review", 
     }
 });
 
