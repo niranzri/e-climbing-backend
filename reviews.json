@@ -1,0 +1,27 @@
+[
+    {
+        "name": "Katana",
+        "brand": "La Sportiva",
+        "type": "shoes",
+        "image": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.mont.com.au%2Fproducts%2Fla-sportiva-katana-women&psig=AOvVaw3PHyu1vi_yT8GIhyrk0pD9&ust=1709738494594000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCND7l6-23YQDFQAAAAAdAAAAABAH",
+        "gender": "female",
+        "reviews": []
+    },
+    {
+        "name": "Katana",
+        "brand": "La Sportiva",
+        "type": "shoes",
+        "image": "https://www.lasportiva.com/media/catalog/product/2/0/20L_100999.jpg?quality=80&bg-color=255,255,255&fit=bounds&height=700&width=700&canvas=700:700",
+        "gender": "male",
+        "reviews": []
+    },
+    {
+        "name": "Corax",
+        "brand": "Petzel",
+        "type": "harness",
+        "image": "https://m.petzl.com/sfc/servlet.shepherd/version/download/068680000067SzjAAE",
+        "gender": "neutral",
+        "reviews": []
+    }
+
+]

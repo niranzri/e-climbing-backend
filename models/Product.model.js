@@ -5,13 +5,18 @@ const productSchema = new Schema({  // creates the productSchema using the Schem
         type: String,
         required: true,
     },
+    brand: {
+        type: String,
+        required: true,
+    },
     type: {
         type: String,
         enum: ["shoes", "bag", "brush", "chalk", "harness", "belay device", "carabiner"],
         required: true,
     },
-    colour: {
+    image: {
         type: String,
+        required: true,
     },
     gender: {
         type: String,
