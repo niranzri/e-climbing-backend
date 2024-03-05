@@ -16,11 +16,12 @@ const FRONTEND_URL = process.env.ORIGIN || 'http://localhost:5173'
 
 // Middleware configuration
 module.exports = app => {
-  // Because this is a server that will accept requests from outside and it will be hosted ona server with a `proxy`, express needs to know that it should trust that setting.
-  // Services like heroku use something called a proxy and you need to add this to your server
+  // Because this is an app that will be hosted on a server with a `proxy`, we tell express to trust the proxy settings. 
+  // Services like heroku (platform at a service PaaS) use proxies.
   app.set('trust proxy', 1)
 
-  // controls a very specific header to pass headers from the frontend
+  // cross-origin resource sharing middleware:
+  // controls a very specific header to pass headers from the frontend; only requests from FRONTEBD_URL are allowed. 
   app.use(
     cors({
       origin: [FRONTEND_URL],
@@ -30,8 +31,11 @@ module.exports = app => {
   // In development environment the app logs
   app.use(logger('dev'))
 
-  // To have access to `body` property in the request
-  app.use(express.json())
-  app.use(express.urlencoded({ extended: false }))
-  app.use(cookieParser())
+  // middleware fucntion that serves static files from the "public" directory. 
+  app.use(express.static("public"));
+
+  // middleware functions to have access to `body` property in the request
+  app.use(express.json()) // parses incoming requests with a JSON payload and populates the req.body with the parsed data.
+  app.use(express.urlencoded({ extended: false })) // parses incoming URL-encoded form data. 
+  app.use(cookieParser()) // parses HTTP cookies from the request headers and males them available in the req.cookies object. 
 }
