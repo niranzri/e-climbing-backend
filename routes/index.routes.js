@@ -8,7 +8,4 @@ router.get('/', (req, res) => {
 const productsRouter = require("./product.routes");
 router.use("/products", productsRouter);
 
-const reviewsRouter = require("./review.routes")
-router.use("/reviews", reviewsRouter);
-
 module.exports = router
