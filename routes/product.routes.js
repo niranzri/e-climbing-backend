@@ -32,28 +32,28 @@ router.get("/:productId", async (req, res) => {
 })
 
 // POST - Creates one review associated with one product
-router.post("/:productId/reviews", async (req, res) => {
+router.post("/:productId/reviews", isAuthenticated, async (req, res) => {
   const { productId } = req.params;
   const payload = req.body;
+  const { userId } = req.tokenPayload;
+  payload.author = userId; // sets the author to the authenticated user's ID
 
   try {
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" })
     }
-    res.status(200).json(product);
-
     payload.product = productId; // Associate the review with the product
 
     const review = await Review.create(payload);
     if (!review) {
       return res.status(404).json({ message: "Review not found" })
     }
-    res.status(200).json(review);
 
     // Push the review directly into the product's reviews array
     await Product.findByIdAndUpdate(productId, { $push: { reviews: review } }, { new: true});
     res.status(201).json({ message: "Review created successfully", review });
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Failed to create the review" })
@@ -61,7 +61,7 @@ router.post("/:productId/reviews", async (req, res) => {
 });
 
 // PUT - Updates one review
-router.put("/:productId/reviews/:reviewId", async (req, res) => {
+router.put("/:productId/reviews/:reviewId", isAuthenticated, async (req, res) => {
   const { reviewId } = req.params;
   const payload = req.body;
 
@@ -79,7 +79,7 @@ router.put("/:productId/reviews/:reviewId", async (req, res) => {
 })
 
 // DELETE -  Deletes one review
-router.delete("/:productId/reviews/:reviewId", async (req, res) => {
+router.delete("/:productId/reviews/:reviewId", isAuthenticated, async (req, res) => {
   const { reviewId } = req.params
    try {
     const deletedReview = await Review.findByIdAndDelete(reviewId);
