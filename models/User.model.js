@@ -9,7 +9,7 @@ const userSchema = new Schema({
         unique: true,
         trim: true,
     },
-    passwordHash: { type: String, required: true },
+    hashedPassword: { type: String, required: true },
     favourites: { type: Types.ObjectId, ref: "Product" },
     addedToCart: { type: Types.ObjectId, ref: "Product" },
 });

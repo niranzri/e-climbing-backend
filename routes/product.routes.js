@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const Product = require("../models/Product.model");
 const Review = require("../models/Review.model");
+const { isAuthenticated } = require("../middlewares/auth.middleware")
 
 // Endpoint / => /api/products
 
