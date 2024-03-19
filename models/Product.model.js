@@ -18,6 +18,10 @@ const productSchema = new Schema({  // creates the productSchema using the Schem
         type: String,
         required: true,
     },
+    price: {
+        type: Number,
+        required: true,
+    },
     gender: {
         type: String,
         enum: ["male", "female", "neutral"],

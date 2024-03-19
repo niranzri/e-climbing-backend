@@ -3,7 +3,8 @@
         "name": "Katana",
         "brand": "La Sportiva",
         "type": "shoes",
-        "image": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.mont.com.au%2Fproducts%2Fla-sportiva-katana-women&psig=AOvVaw3PHyu1vi_yT8GIhyrk0pD9&ust=1709738494594000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCND7l6-23YQDFQAAAAAdAAAAABAH",
+        "image": "https://cdn.shopify.com/s/files/1/0022/9120/4157/products/la-sportiva-la-sportiva-katana-women-eu-36-white-purple-other-gear-las20m000500360-14129071587464.jpg",
+        "price": 149.95,
         "gender": "female",
         "reviews": []
     },
@@ -12,6 +13,7 @@
         "brand": "La Sportiva",
         "type": "shoes",
         "image": "https://www.lasportiva.com/media/catalog/product/2/0/20L_100999.jpg?quality=80&bg-color=255,255,255&fit=bounds&height=700&width=700&canvas=700:700",
+        "price": 149.95,
         "gender": "male",
         "reviews": []
     },
@@ -20,6 +22,7 @@
         "brand": "Petzel",
         "type": "harness",
         "image": "https://m.petzl.com/sfc/servlet.shepherd/version/download/068680000067SzjAAE",
+        "price": 50,
         "gender": "neutral",
         "reviews": []
     }
