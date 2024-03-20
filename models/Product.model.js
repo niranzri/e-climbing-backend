@@ -24,7 +24,7 @@ const productSchema = new Schema({  // creates the productSchema using the Schem
     },
     gender: {
         type: String,
-        enum: ["male", "female", "neutral"],
+        enum: ["M", "W", "X"],
         required: true,
     },
     reviews: {
