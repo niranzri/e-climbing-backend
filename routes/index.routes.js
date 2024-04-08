@@ -7,4 +7,7 @@ router.get('/', (req, res) => {
 const productsRouter = require("./product.routes");
 router.use("/products", productsRouter);
 
+const usersRouter = require("./user.routes");
+router.use("/users", usersRouter);
+
 module.exports = router
