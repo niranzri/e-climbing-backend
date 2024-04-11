@@ -8,6 +8,6 @@ const productsRouter = require("./product.routes");
 router.use("/products", productsRouter);
 
 const usersRouter = require("./user.routes");
-router.use("/users", usersRouter);
+router.use("/users/me", usersRouter);
 
 module.exports = router

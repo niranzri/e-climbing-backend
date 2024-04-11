@@ -3,19 +3,19 @@ const Product = require("../models/Product.model");
 const User = require("../models/User.model");
 const { isAuthenticated } = require("../middlewares/auth.middleware")
 
-// Adds product to wishlist
-router.post("/:userId/wishlist", isAuthenticated, async (req, res) => {
-    const userId = req.params.userId;
-    const productId = req.body.productId; // product Id is sent in the request body
+// POST product to user's wishlist
+router.post("/wishlist", isAuthenticated, async (req, res) => {
+    const { userId } = req.tokenPayload;
+    const { productId } = req.body; // product Id is sent in the request body
 
     try {
-        // Find user by ID
+        // Checks that user exists in the database
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Find product by ID
+        // Checks that product exists in the database
         const product = await Product.findById(productId);
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
@@ -24,15 +24,13 @@ router.post("/:userId/wishlist", isAuthenticated, async (req, res) => {
         // Check if product is already in favorites
         if (user.favourites.includes(productId)) {
             return res.status(400).json({ message: "Product is already in favorites" });
+        } else {
+            user.favourites.push(productId);
+             // Save user - modifications to docs are not automatically persisted to the database, so one need to explicitly call save() to persist the changes
+            await user.save();
+            return res.status(200).json({ message: "Product added to favorites successfully" });
         }
 
-        // Add product to favorites
-        user.favourites.push(productId);
-
-        // Save user - modifications to docs are not automatically persisted to the database, so one need to explicitly call save() to persist the changes
-        await user.save();
-
-        return res.status(200).json({ message: "Product added to favorites successfully" });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Internal server error" });
@@ -40,30 +38,28 @@ router.post("/:userId/wishlist", isAuthenticated, async (req, res) => {
 
 })
 
-// Deletes product from wishlist
-router.delete("/:userId/wishlist/:productId", isAuthenticated, async (req, res) => {
-    const userId = req.params.userId;
-    const productId = req.params.productId; // product Id is sent in the request body
+// DDELETE product from wishlist
+router.delete("/wishlist/:productId", isAuthenticated, async (req, res) => {
+    const { userId } = req.tokenPayload;
+    const { productId } = req.params; // product Id is sent in the request body
 
     try {
-        // Find user by ID
+        // Checks if user exists in DB
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Check if product exists in favorites
-        if (!user.favourites.includes(productId)) {
-            return res.status(400).json({ message: "Product is not in favorites" });
+        // Checks if favorites includes product
+        if (!user.addedToCart.includes(productId)) {
+            return res.status(400).json({ message: "Product is not in cart" });
         }
 
-        // Remove product from favorites
-        user.favourites = user.favourites.filter(fav => fav.toString() !== productId);
-
-        // Save user
+        // Removes product from favorites & save user changes
+        user.favourites = user.favourites.filter(item => item._id !== productId);
         await user.save();
-
         return res.status(200).json({ message: "Product removed from favorites successfully" });
+
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Internal server error" });
@@ -71,36 +67,34 @@ router.delete("/:userId/wishlist/:productId", isAuthenticated, async (req, res) 
 })
 
 
-// Adds product to cart
-router.post("/:userId/cart", isAuthenticated, async (req, res) => {
-    const userId = req.params.userId;
-    const productId = req.body.productId; // product Id is sent in the request body
+// Adds product to user's cart
+router.post("/cart", isAuthenticated, async (req, res) => {
+    const { userId } = req.tokenPayload;
+    const { productId } = req.body; // product Id is sent in the request body
 
     try {
-        // Find user by ID
+        // Checks that user exists in DB
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Find product by ID
+        // Checks that product exists in DB
         const product = await Product.findById(productId);
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
         }
 
-        // Check if product is already in favorites
-        if (user.favourites.includes(productId)) {
-            return res.status(400).json({ message: "Product is already in favorites" });
+        // Check if product is already in cart
+        if (user.addedToCart.includes(productId)) {
+            return res.status(400).json({ message: "Product is already in cart" });
+        } else {
+            user.addedToCart.push(productId);
+             // Save user - modifications to docs are not automatically persisted to the database, so one need to explicitly call save() to persist the changes
+            await user.save();
+            return res.status(200).json({ message: "Product added to cart successfully" });
         }
 
-        // Add product to favorites
-        user.addedToCart.push(productId);
-
-        // Save user
-        await user.save();
-
-        return res.status(200).json({ message: "Product added to favorites successfully" });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Internal server error" });
@@ -109,10 +103,10 @@ router.post("/:userId/cart", isAuthenticated, async (req, res) => {
 })
 
 
-// Deletes product from cart
-router.delete("/:userId/cart/:productId", isAuthenticated, async (req, res) => {
-    const userId = req.params.userId;
-    const productId = req.params.productId;
+// DELETE product from cart
+router.delete("/cart/:productId", isAuthenticated, async (req, res) => {
+    const { userId } = req.tokenPayload;
+    const { productId }= req.params;
 
     try {
         // Find user by ID
