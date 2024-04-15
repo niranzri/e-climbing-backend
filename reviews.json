@@ -1,7 +1,16 @@
 [
     {
-        "description": "very comfortable all-round shoes",
-        "numberStars": 3,
-        "createdBy": null
+        "title": "Awesome!",
+        "description": "Very comfortable all-round shoes",
+        "rating": 3,
+        "product": "65fb01551779ad73e46e07bc",
+        "author": "66180b92e9630bd4b1456146"
+    },
+    {
+        "title": "Amazing all-round shoes",
+        "description": "Very good grip on all surfaces, would 100% recommend",
+        "rating": 4,
+        "product": "65fb01551779ad73e46e07bd",
+        "author": "66180b92e9630bd4b1456146"
     }
 ]
