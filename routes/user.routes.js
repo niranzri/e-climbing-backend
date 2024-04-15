@@ -38,7 +38,7 @@ router.post("/wishlist", isAuthenticated, async (req, res) => {
 
 })
 
-// DDELETE product from wishlist
+// DELETE product from wishlist
 router.delete("/wishlist/:productId", isAuthenticated, async (req, res) => {
     const { userId } = req.tokenPayload;
     const { productId } = req.params; // product Id is sent in the request body
@@ -51,8 +51,8 @@ router.delete("/wishlist/:productId", isAuthenticated, async (req, res) => {
         }
 
         // Checks if favorites includes product
-        if (!user.addedToCart.includes(productId)) {
-            return res.status(400).json({ message: "Product is not in cart" });
+        if (!user.favourites.includes(productId)) {
+            return res.status(400).json({ message: "Product is not in wishlist" });
         }
 
         // Removes product from favorites & save user changes
