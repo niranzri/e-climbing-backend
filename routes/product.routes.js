@@ -53,10 +53,6 @@ router.put("/:productId/reviews", async (req, res) => {
     // Find reviews for the product
     const productReviews = await Review.find({ product: productId });
 
-    if (!productReviews || productReviews.length === 0) {
-      return res.status(404).json({ message: "Product has no reviews"})
-    }
-
     // Check if there are new reviews to add 
     const existingReviewIds = product.reviews.map(review => review._id.toString());
     const reviewsToAdd = productReviews.filter(review => !existingReviewIds.includes(review._id.toString()));
