@@ -16,19 +16,41 @@ router.get("/", async (req, res) => {
     }
   });
   
-// GET product and populate with reviews
-router.get("/:productId", async (req, res) => {
+// PUT product review info - associates existing reviews with product & populates the field with the review object
+router.get("/:productId/reviews", async (req, res) => {
   const { productId } = req.params;
   try {
-      const product = await Product.findById(productId).populate("reviews")
-      if (!product) {
-        return res.status(404).json({ message: "Product not found"})
-      }
-      res.status(200).json(product);
+    // Checks if product exists
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    
+    // Finds reviews for the product
+    const productReviews = await Review.find({product: productId});
+    if (!productReviews || productReviews.length === 0) {
+      return res.status(404).json({ message: "Product has no reviews"})
+    }
+
+    // If the product's reviews field is empty, simply assign the array of review IDs
+    if (!product.reviews || product.reviews.length === 0) {
+      product.reviews = productReviews.map(review => review._id);
+    } else {
+      // Otherwise, append the new review IDs to the existing ones
+      product.reviews = [...product.reviews, ...productReviews.map(review => review._id)];
+    }
+  
+    // Saves the updated product
+    await product.save();
+
+    // Populates the reviews field in the product model
+    const updatedProduct = await Product.findById(productId).populate('reviews');
+
+    res.status(200).json(updatedProduct);
       
   } catch (error) {
       console.log(error);
-      res.status(500).json({message: "Error getting the product requested"})
+      res.status(500).json({message: "Error addings reviews to product"})
   }
 })
 
