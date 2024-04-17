@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const mongoose = require("mongoose")
 const Product = require("../models/Product.model");
 const Review = require("../models/Review.model");
 const { isAuthenticated } = require("../middlewares/auth.middleware")
@@ -15,39 +16,60 @@ router.get("/", async (req, res) => {
         res.status(500).json({message: "Error getting all the products"})
     }
   });
-  
-// PUT product review info - associates existing reviews with product & populates the field with the review object
-router.get("/:productId/reviews", async (req, res) => {
+
+// GET product & populate with reviews
+router.get("/:productId", async (req, res) => {
   const { productId } = req.params;
   try {
-    // Checks if product exists
+    // Populates the reviews field in the product model
+    const product = await Product.findById(productId).populate('reviews');
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json(product);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "Error fetching product information"})
+  }
+})
+
+  
+// PUT product review info - associates existing reviews with product 
+router.put("/:productId/reviews", async (req, res) => {
+  const { productId } = req.params;
+  
+    // Check if productId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ message: "Invalid productId" });
+    }
+
+  try {
+    // Check if product exists
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
     
-    // Finds reviews for the product
-    const productReviews = await Review.find({product: productId});
+    // Find reviews for the product
+    const productReviews = await Review.find({ product: productId });
+
     if (!productReviews || productReviews.length === 0) {
       return res.status(404).json({ message: "Product has no reviews"})
     }
 
-    // If the product's reviews field is empty, simply assign the array of review IDs
-    if (!product.reviews || product.reviews.length === 0) {
-      product.reviews = productReviews.map(review => review._id);
-    } else {
-      // Otherwise, append the new review IDs to the existing ones
-      product.reviews = [...product.reviews, ...productReviews.map(review => review._id)];
+    // Check if there are new reviews to add 
+    const existingReviewIds = product.reviews.map(review => review._id.toString());
+    const reviewsToAdd = productReviews.filter(review => !existingReviewIds.includes(review._id.toString()));
+
+    if (reviewsToAdd.length > 0) {
+      product.reviews.push(...reviewsToAdd.map(review => review._id));
+      await product.save(); 
     }
+    
+    res.status(200).json(product);
+    console.log(product);
+
   
-    // Saves the updated product
-    await product.save();
-
-    // Populates the reviews field in the product model
-    const updatedProduct = await Product.findById(productId).populate('reviews');
-
-    res.status(200).json(updatedProduct);
-      
   } catch (error) {
       console.log(error);
       res.status(500).json({message: "Error addings reviews to product"})
@@ -59,17 +81,17 @@ router.post("/:productId/reviews", isAuthenticated, async (req, res) => {
   const { productId } = req.params;
   const { userId } = req.tokenPayload;
   const payload = req.body;
-  payload.product = productId; // Associates the review with the product
-  payload.author = userId; // Sets the author to the authenticated user's ID
+  payload.product = productId; // Associate the review with the product
+  payload.author = userId; // Set the author to the authenticated user's ID
 
   try {
-    // Retrieves the book form the database using its ID (to ensure the book exists and can be updated)
+    // Retrieve the book form the database using its ID (to ensure the book exists and can be updated)
     const product = await Product.findById(productId); 
     if (!product) {
       return res.status(404).json({ message: "Product not found" })
     }
 
-    // creates a review
+    // Create a review
     const review = await Review.create(payload);
     if (!review) {
       return res.status(404).json({ message: "Review not found" })
@@ -92,19 +114,19 @@ router.put("/:productId/reviews/:reviewId", isAuthenticated, async (req, res) =>
   const payload = req.body;
 
   try {
-    // Checks if review exists in the database
+    // Check if review exists in the database
     const review = await Review.findById(reviewId)
       if (!review) {
         return res.status(404).json({ message: "Review not found."})
       }
 
-      // Checks if the review belongs to the specified product
+      // Check if the review belongs to the specified product
       if (review.product !== productId) {
         return res.status(400).json({ message: "Review does not belong to the specified product." });
       }
 
       if (review.author == userId) {
-      // Checks if the review exists in the database and updates it
+      // Check if the review exists in the database and updates it
       const updatedReview = await Review.findByIdAndUpdate(reviewId, payload, { new: true});
       res.status(200).json(updatedReview);
         if (!updatedReview) {
@@ -126,20 +148,20 @@ router.delete("/:productId/reviews/:reviewId", isAuthenticated, async (req, res)
   const { userId } = req.tokenPayload; 
 
    try {
-    // Checks if the review exists in the database 
+    // Check if the review exists in the database 
     const review = await Review.findById(reviewId)
     if (!review) {
       return res.status(404).json({ message: "Review not found."})
     }
 
-    // Checks if the review belongs to the specified product
+    // Check if the review belongs to the specified product
     if (review.product !== productId) { // review.product.toString() !== productId ?
       return res.status(400).json({ message: "Review does not belong to the specified product." });
     }
 
-    // Checks if the user is allowed to delete the review
+    // Check if the user is allowed to delete the review
     if (review.author == userId) {
-      // Checks if the review exists in the database and deletes it
+      // Check if the review exists in the database and deletes it
       const deletedReview = await Review.findByIdAndDelete(reviewId);
       if (!deletedReview) {
         return res.status(404).json({ message: "Deleted review not found or already deleted." })
