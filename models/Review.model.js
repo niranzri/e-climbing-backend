@@ -23,7 +23,7 @@ const reviewSchema = new Schema({
         ref: "User", 
         default: null 
     },
-}, { timestamps: true }) //adds timestamps for createdAt and updatedAt
+}, { timestamps: true }) // adds timestamps for createdAt and updatedAt
 
 const Review = model("Review", reviewSchema);
 module.exports = Review;

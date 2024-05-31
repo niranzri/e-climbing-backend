@@ -55,7 +55,7 @@ router.post("/signup", async (req, res) => {
 
 //LOGIN ROUTE
 router.post("/login", async (req, res) => {
-    const { username, email, password }=req.body;
+    const { username, email, password } = req.body;
 
     try {
         const potentialUser = await User.findOne({ email: email.toLowerCase().trim() })
