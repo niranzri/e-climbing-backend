@@ -92,7 +92,7 @@ router.post("/login", async (req, res) => {
 router.get('/verify', isAuthenticated, async (req, res) => {
     console.log(req.tokenPayload)
     const currentUser = await User.findById(req.tokenPayload.userId)
-    res.status(200).json({ message: "User verified" })
+    res.status(200).json({ message: "User verified", currentUser })
 })
   
 
